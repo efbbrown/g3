@@ -62,29 +62,37 @@ g3.linearScale = function(min, max) {
   return d3.scale.linear().range([min, max]);
 }
 
+// Create an ordinal scale with space in between ords (bars?)
+g3.ordinalScale = function(min, max, space) {
+  space = space || 0.3;
+  return d3.scale.ordinal()
+           .rangeRoundBands([min, max], space);
+}
+
 /*------------------------------*/
 
-g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab) {
+// A scatter plot
+g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab, colour, marginsize) {
   
-  var marginRatio = .1;
+  var marginRatio = marginsize || 0.1;
   
   var parentDiv = d3.select(parent);
 
 // Chart width and height, dependent on parentDiv and marginRatio 
-  var parentWidth = elementWidth(parentDiv),
-      parentHeight = elementHeight(parentDiv);
+  var parentWidth = g3.elementWidth(parentDiv),
+      parentHeight = g3.elementHeight(parentDiv);
       
   // Make sure this is height then width !!!
-  var margin = marginObject(parentHeight, parentWidth, marginRatio);
+  var margin = g3.marginObject(parentHeight, parentWidth, marginRatio);
 
-  var width = chartLength(parentWidth, margin.left, margin.right),
-      height = chartLength(parentHeight, margin.top, margin.bottom);
+  var width = g3.chartLength(parentWidth, margin.left, margin.right),
+      height = g3.chartLength(parentHeight, margin.top, margin.bottom);
 
   // Add chart svg to parentDiv
-  var chart = appendChart(parentDiv, parentWidth, parentHeight, margin);
+  var chart = g3.appendChart(parentDiv, parentWidth, parentHeight, margin);
   
-  var x = linearScale(0, width);
-  var y = linearScale(height, 0);
+  var x = g3.linearScale(0, width);
+  var y = g3.linearScale(height, 0);
   
   var xAxis = d3.svg.axis()
         .scale(x)
@@ -114,6 +122,16 @@ g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab) {
       .attr("cx", function(d) { return x(d[xvar]); })
       .attr("cy", function(d) { return y(d[yvar]); })
       .attr("r", 3);
+  
+  // Fill points if colour is given. Don't know why this isn't working.
+  if (colour === null || colour === "undefined") {
+    var pointsfill = d3.selectAll(parent + " .point")
+                          .style("fill", "#444");
+  } else {
+    var pointsfill = d3.selectAll(parent + " .point")
+                          .style("fill", colour);
+  }
+  
   /*   
   var bars = chart.selectAll(".bar")
       .data(data)
@@ -132,7 +150,7 @@ g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab) {
       .attr("x", (width/2))
       .attr("y", 0 - (margin.top / 2))
       .attr("text-anchor", "middle")
-      .style("font-size", "2em")
+      .style("font-size", "1em")
       .text(title);
   }
   
@@ -165,10 +183,41 @@ g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab) {
   
 }
 
-g3.plot = function(geom, parent, data, xvar, yvar, title, xlab, ylab) {
+// A bar plot
+g3.bar = function(parent, data, xvar, yvar, title, xlab, ylab, colour, marginsize) {
+  
+  var marginRatio = marginsize || .1;
+  
+  var parentDiv = d3.select(parent);
+
+// Chart width and height, dependent on parentDiv and marginRatio 
+  var parentWidth = elementWidth(parentDiv),
+      parentHeight = elementHeight(parentDiv);
+      
+  // Make sure this is height then width !!!
+  var margin = marginObject(parentHeight, parentWidth, marginRatio);
+
+  var width = chartLength(parentWidth, margin.left, margin.right),
+      height = chartLength(parentHeight, margin.top, margin.bottom);
+
+  // Add chart svg to parentDiv
+  var chart = appendChart(parentDiv, parentWidth, parentHeight, margin);
+  
+  var x = ordinalScale(0, width);
+  var y = linearScale(height, 0);
+  
+}
+
+/*------------------------------*/
+
+g3.plot = function(geom, parent, data, xvar, yvar, title, xlab, ylab, colour) {
   
   if (geom === "scatter") {
-    return(g3.scatter(parent, data, xvar, yvar, title, xlab, ylab));
+    return(g3.scatter(parent, data, xvar, yvar, title, xlab, ylab, colour));
+  }
+  
+  if (geom === "bar") {
+    return(g3.bar(parent, data, xvar, yvar, title, xlab, ylab, colour));
   }
   
 }
