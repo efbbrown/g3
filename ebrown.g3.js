@@ -25,16 +25,21 @@ ebrown.g3 = g3;
 
 // Return clientWidth of element
 g3.elementWidth = function(element) {
+
   return element[0][0].clientWidth;
+
 }
 
 // Return clientHeight of element
 g3.elementHeight = function(element) {
+
   return element[0][0].clientHeight;
+
 }
 
 // Create and return margins
 g3.marginObject = function(parentHeight, parentWidth, marginRatio) {
+
   return {top: parentHeight * marginRatio,
           right: parentWidth * marginRatio,
           bottom: parentHeight * marginRatio,
@@ -43,7 +48,9 @@ g3.marginObject = function(parentHeight, parentWidth, marginRatio) {
 
 // Calculate and return chart length. Used for both chart width and chart height.
 g3.chartLength = function(parentLength, marginOne, marginTwo) {
+
   return parentLength - marginOne - marginTwo;
+
 }
 
 // Append and return a svg with g element
@@ -57,19 +64,25 @@ g3.appendChart = function(parentDiv, parentWidth, parentHeight, margin) {
   
 }
 
+/*---------------Scales---------------*/
+
 // Create a d3 linear scale
 g3.linearScale = function(min, max) {
+
   return d3.scale.linear().range([min, max]);
+
 }
 
 // Create an ordinal scale with space in between ords (bars?)
 g3.ordinalScale = function(min, max, space) {
+
   space = space || 0.3;
   return d3.scale.ordinal()
            .rangeRoundBands([min, max], space);
+
 }
 
-/*------------------------------*/
+/*-----------------Plots-------------*/
 
 // A scatter plot
 g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab, colour, marginsize) {
@@ -132,16 +145,7 @@ g3.scatter = function(parent, data, xvar, yvar, title, xlab, ylab, colour, margi
                           .style("fill", colour);
   }
   
-  /*   
-  var bars = chart.selectAll(".bar")
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d[xvar]); })
-      .attr("y", function(d) { return y(d[yvar]); })
-      .attr("width", x.rangeBand())
-      .attr("height", function(d) { return height - y(d.value); })
-  */ 
+
   // Add title if given
   if (title === null || title === "undefined") {
     
@@ -205,10 +209,21 @@ g3.bar = function(parent, data, xvar, yvar, title, xlab, ylab, colour, marginsiz
   
   var x = ordinalScale(0, width);
   var y = linearScale(height, 0);
+
+     
+  var bars = chart.selectAll(".bar")
+      .data(data)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d[xvar]); })
+      .attr("y", function(d) { return y(d[yvar]); })
+      .attr("width", x.rangeBand())
+      .attr("height", function(d) { return height - y(d.value); })
+  
   
 }
 
-/*------------------------------*/
+/*----------------The legit plot--------------*/
 
 g3.plot = function(geom, parent, data, xvar, yvar, title, xlab, ylab, colour) {
   
