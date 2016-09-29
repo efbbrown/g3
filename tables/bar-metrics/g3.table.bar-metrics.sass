@@ -1,0 +1,38 @@
+$row-border-color: #999
+$bar-color: #666
+$cell-padding: 5px 0
+$col-widths: (table-name: 25%, table-val: 20%, table-bar: 54%)
+
+.barchart-metrics
+	.table-row
+		display: flex
+		border-bottom: 1px solid $row-border-color
+		justify-content: space-between
+		div
+			display: inline-block
+			white-space: nowrap
+		p 
+			line-height: 1
+	.table-name
+		// width: 25%
+		margin: auto 0
+		padding: $cell-padding
+	.table-val
+		// width: 20%
+		margin: auto 0
+		padding: $cell-padding
+	.table-bar
+		// width: 54%
+		margin: $cell-padding
+		.bar
+			height: 50%
+			margin: auto 0
+			background: $bar-color
+			vertical-align: middle
+			display: inline-block
+.table-row:last-child:not(:first-child)
+	border-bottom: none
+
+@each $col, $width in $col-widths
+	.barchart-metrics .table-row .#{$col}
+		width: $width
